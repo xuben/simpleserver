@@ -13,6 +13,8 @@ public class Main {
 		ServerConfig.loadConfig();
 		// 初始化命令配置
 		CommandConfig.loadConfig();
+		// 启动命令配置监控线程
+		new Thread(new CommandMonitor()).start();
 		
 		ServerSocket server;
 		try {

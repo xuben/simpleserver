@@ -18,6 +18,9 @@ public class ServerConfig {
 	public static int CONNECTION_TIMEOUT = 3*60*1000;
 	/**是否压缩发送的数据*/
 	public static boolean DATA_COMPRESSION = true;
+	/**命令配置文件路径*/
+	public static String COMMAND_CONFIG_PATH = File.separator 
+			+ "conf" + File.separator + "commands";
 	
 	/**配置文件路径*/
 	public static String SERVER_CONFIG_PATH = File.separator 
@@ -27,7 +30,7 @@ public class ServerConfig {
 	 * 读取配置文件
 	 */
 	public static void loadConfig() {
-		System.out.println("[ServerConfig]: start loading server config");
+		System.out.println("[ServerConfig]: loading server config");
 		Properties prop = new Properties();
 		File f = new File(System.getProperty("user.dir") + SERVER_CONFIG_PATH);
 		try {
@@ -40,6 +43,9 @@ public class ServerConfig {
 					prop.getProperty("server.connection.timeout", 3*60*1000+""));
 			DATA_COMPRESSION = Boolean.parseBoolean(
 					prop.getProperty("server.data.compression", "true"));
+			if (prop.containsKey("server.command.path")) {
+				COMMAND_CONFIG_PATH = prop.getProperty("server.command.path");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
