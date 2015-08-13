@@ -157,7 +157,21 @@ public class CommandConfig {
 			data = commandError;
 			state = 0;
 		}
-		System.out.printf("command:%s, data:%s\n", command, data);
+		// 输出错误数据
+		if (state == 0) {
+			if (ServerConfig.PRINT_FAILURE_DATA) {
+				System.out.printf("command:%s, not configured\n", command);
+			}
+		}
+		// 输出成功数据
+		else if (ServerConfig.PRINT_SUCCESS_DATA) {
+			// 输出详细数据
+			if (ServerConfig.PRINT_VERBOSE_DATA) {
+				System.out.printf("command:%s, data:%s\n", command, data);
+			} else {
+				System.out.printf("command:%s, success\n", command);
+			}
+		}
 		return String.format("{\"action\":{\"state\":%d,\"data\":%s}}", state, data);
 	}
 }

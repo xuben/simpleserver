@@ -21,6 +21,12 @@ public class ServerConfig {
 	/**命令配置文件路径*/
 	public static String COMMAND_CONFIG_PATH = File.separator 
 			+ "conf" + File.separator + "commands";
+	/**是否打印出详细的请求响应数据*/
+	public static boolean PRINT_VERBOSE_DATA = false;
+	/**是否打印出成功的请求响应数据*/
+	public static boolean PRINT_SUCCESS_DATA = true;
+	/**是否打印出未配置的请求响应数据*/
+	public static boolean PRINT_FAILURE_DATA = true;
 	
 	/**配置文件路径*/
 	public static String SERVER_CONFIG_PATH = File.separator 
@@ -46,6 +52,12 @@ public class ServerConfig {
 			if (prop.containsKey("server.command.path")) {
 				COMMAND_CONFIG_PATH = prop.getProperty("server.command.path");
 			}
+			PRINT_VERBOSE_DATA = Boolean.parseBoolean(
+					prop.getProperty("server.data.print.verbose"));
+			PRINT_SUCCESS_DATA = Boolean.parseBoolean(
+					prop.getProperty("server.data.print.success"));
+			PRINT_FAILURE_DATA = Boolean.parseBoolean(
+					prop.getProperty("server.data.print.failure"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
