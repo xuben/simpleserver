@@ -19,7 +19,7 @@ public class CommandConfig {
 	/**命令数据*/
 	private static HashMap<String, String> commandMap = new HashMap<String, String>();
 	/**错误数据*/
-	private static String commandError = "{message:{msg:命令未配置}}";
+	private static String commandError = "{\"msg\":\"命令未配置\"}";
 	
 	/**配置文件路径*/
 	public static String COMMAND_CONFIG_PATH = File.separator 
@@ -69,6 +69,8 @@ public class CommandConfig {
 				}
 				builder.append(line);
 			}
+			// 关闭输入流
+			scanner.close();
 			// 解析命令
 			if (builder.length() > 0) {
 				List<JSONObject> commands = JSON.parseArray(
@@ -98,9 +100,9 @@ public class CommandConfig {
 		// 命令未配置
 		if (data == null) {
 			data = commandError;
-			state = 2;
+			state = 0;
 		}
 		System.out.printf("command:%s, data:%s\n", command, data);
-		return String.format("{action:{state:%d,data:%s}}", state, data);
+		return String.format("{\"action\":{\"state\":%d,\"data\":%s}}", state, data);
 	}
 }

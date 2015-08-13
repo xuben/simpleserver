@@ -7,6 +7,8 @@ import java.net.Socket;
 public class Main {
 	
 	public static void main(String[] args) {
+		System.out.println("[System]: file.encoding = " 
+			+ System.getProperty("file.encoding"));
 		// 初始服务器配置
 		ServerConfig.loadConfig();
 		// 初始化命令配置
