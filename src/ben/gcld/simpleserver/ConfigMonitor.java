@@ -11,7 +11,7 @@ public class ConfigMonitor implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("[ConfigMonitor] command monitor started");
+		System.out.println("[ConfigMonitor] config monitor started");
 		while (true) {
 			try {
 				ServerConfig.loadConfig();
