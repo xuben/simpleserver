@@ -13,20 +13,21 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * 命令配置
+ * 
  * @author xuben
  *
  */
 public class CommandConfig {
 
-	/**命令数据*/
+	/** 命令数据 */
 	private static ConcurrentHashMap<String, String> commandMap = new ConcurrentHashMap<String, String>();
-	/**文件最后修改时间*/
+	/** 文件最后修改时间 */
 	private static ConcurrentHashMap<String, Long> modifiedMap = new ConcurrentHashMap<String, Long>();
-	/**错误数据*/
+	/** 错误数据 */
 	private static String commandError = "{\"msg\":\"命令未配置\"}";
-	/**配置文件根目录*/
+	/** 配置文件根目录 */
 	private static File rootFile;
-	
+
 	/**
 	 * 读取配置文件
 	 */
@@ -35,19 +36,20 @@ public class CommandConfig {
 		if (null != rootFile) {
 			return;
 		}
-		rootFile = new File(System.getProperty("user.dir") + ServerConfig.COMMAND_CONFIG_PATH);
-		System.out.println("[CommandConfig]: loading command configs " + rootFile.getAbsolutePath());
+		rootFile = new File(System.getProperty("user.dir")
+				+ ServerConfig.COMMAND_CONFIG_PATH);
+		System.out.println("[CommandConfig] loading command configs "
+				+ rootFile.getAbsolutePath());
 		try {
 			loadFiles(rootFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("[CommandConfig]: command configs loaded");
+		System.out.println("[CommandConfig] command configs loaded");
 	}
-	
+
 	/**
-	 * 检测配置文件是否需要重新加载
-	 * 如果需要则进行加载
+	 * 检测配置文件是否需要重新加载 如果需要则进行加载
 	 */
 	public static void checkAndLoadConfig() {
 		// 配置文件未加载过
@@ -62,9 +64,10 @@ public class CommandConfig {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * 读取文件或目录下所有文件的配置
+	 * 
 	 * @param f
 	 * @throws IOException
 	 */
@@ -83,11 +86,12 @@ public class CommandConfig {
 			}
 		}
 	}
-	
+
 	/**
 	 * 检测并读取文件
+	 * 
 	 * @param f
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
 	private static void checkAndLoadFile(File f) throws FileNotFoundException {
 		Long time = modifiedMap.get(f.getAbsolutePath());
@@ -96,18 +100,22 @@ public class CommandConfig {
 			return;
 		}
 		if (null == time) { // 加载新文件
-			System.out.println("[CommandConfig]: loading command config " + f.getName());
+			System.out.println("[CommandConfig] loading command config "
+					+ f.getName());
 		} else if (time < f.lastModified()) { // 文件有修改，重新加载
-			System.out.println("[CommandConfig]: reloading command config " + f.getName());
+			System.out.println("[CommandConfig] reloading command config "
+					+ f.getName());
 		}
 		loadFile(f);
-		System.out.println("[CommandConfig]: command config " + f.getName() + " loaded");
+		System.out.println("[CommandConfig] command config " + f.getName()
+				+ " loaded");
 	}
-	
+
 	/**
 	 * 读取文件配置
+	 * 
 	 * @param f
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
 	private static void loadFile(File f) throws FileNotFoundException {
 		Scanner scanner = new Scanner(f);
@@ -124,14 +132,14 @@ public class CommandConfig {
 		}
 		// 关闭输入流
 		scanner.close();
-		
+
 		// 更新文件修改时间
 		modifiedMap.put(f.getAbsolutePath(), f.lastModified());
-		
+
 		// 解析命令
 		if (builder.length() > 0) {
-			List<JSONObject> commands = JSON.parseArray(
-					builder.toString(), JSONObject.class);
+			List<JSONObject> commands = JSON.parseArray(builder.toString(),
+					JSONObject.class);
 			for (JSONObject command : commands) {
 				String cmdName = command.getString("command");
 				String cmdData = command.getString("data");
@@ -139,9 +147,10 @@ public class CommandConfig {
 			}
 		}
 	}
-	
+
 	/**
 	 * 获取命令对应的数据
+	 * 
 	 * @param command
 	 * @return
 	 */
@@ -157,21 +166,24 @@ public class CommandConfig {
 			data = commandError;
 			state = 0;
 		}
-		// 输出错误数据
-		if (state == 0) {
-			if (ServerConfig.PRINT_FAILURE_DATA) {
-				System.out.printf("command:%s, not configured\n", command);
+		if (!ServerConfig.printIgnoreMap.containsKey(command)) {
+			// 输出错误数据
+			if (state == 0) {
+				if (ServerConfig.PRINT_FAILURE_DATA) {
+					System.out.printf("command:%s, not configured\n", command);
+				}
+			}
+			// 输出成功数据
+			else if (ServerConfig.PRINT_SUCCESS_DATA) {
+				// 输出详细数据
+				if (ServerConfig.PRINT_VERBOSE_DATA) {
+					System.out.printf("command:%s, data:%s\n", command, data);
+				} else {
+					System.out.printf("command:%s, success\n", command);
+				}
 			}
 		}
-		// 输出成功数据
-		else if (ServerConfig.PRINT_SUCCESS_DATA) {
-			// 输出详细数据
-			if (ServerConfig.PRINT_VERBOSE_DATA) {
-				System.out.printf("command:%s, data:%s\n", command, data);
-			} else {
-				System.out.printf("command:%s, success\n", command);
-			}
-		}
-		return String.format("{\"action\":{\"state\":%d,\"data\":%s}}", state, data);
+		return String.format("{\"action\":{\"state\":%d,\"data\":%s}}", state,
+				data);
 	}
 }

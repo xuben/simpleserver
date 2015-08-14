@@ -7,14 +7,14 @@ import java.net.Socket;
 public class Main {
 	
 	public static void main(String[] args) {
-		System.out.println("[System]: file.encoding = " 
+		System.out.println("[System] file.encoding = " 
 			+ System.getProperty("file.encoding"));
 		// 初始服务器配置
 		ServerConfig.loadConfig();
 		// 初始化命令配置
 		CommandConfig.loadConfig();
 		// 启动命令配置监控线程
-		new Thread(new CommandMonitor()).start();
+		new Thread(new ConfigMonitor()).start();
 		
 		ServerSocket server;
 		try {

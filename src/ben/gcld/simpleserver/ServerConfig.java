@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 服务器配置
@@ -27,40 +29,72 @@ public class ServerConfig {
 	public static boolean PRINT_SUCCESS_DATA = true;
 	/**是否打印出未配置的请求响应数据*/
 	public static boolean PRINT_FAILURE_DATA = true;
+	/**不打印请求响应数据的命令*/
+	public static ConcurrentHashMap<String, String> printIgnoreMap = new ConcurrentHashMap<String, String>();
 	
 	/**配置文件路径*/
 	public static String SERVER_CONFIG_PATH = File.separator 
 			+ "conf" + File.separator + "server.properties";
+	/**配置文件*/
+	private static File f;
+	/**配置文件上次修改时间*/
+	private static AtomicLong modifiedTime = new AtomicLong();
 	
 	/**
 	 * 读取配置文件
 	 */
 	public static void loadConfig() {
-		System.out.println("[ServerConfig]: loading server config");
-		Properties prop = new Properties();
-		File f = new File(System.getProperty("user.dir") + SERVER_CONFIG_PATH);
+		// 已初始化过并且文件未修改
+		if (null != f && f.lastModified() <= modifiedTime.get()) {
+			return;
+		}
+		if (null == f) { // 未初始化过
+			System.out.println("[ServerConfig] loading server config");
+			f = new File(System.getProperty("user.dir") + SERVER_CONFIG_PATH);
+		} else { // 文件有修改
+			System.out.println("[ServerConfig] reloading server config");
+		}
 		try {
-			FileInputStream in = new FileInputStream(f);
-			prop.load(in);
-			
-			PORT = Integer.parseInt(
-					prop.getProperty("server.port", "5577"));
-			CONNECTION_TIMEOUT = Integer.parseInt(
-					prop.getProperty("server.connection.timeout", 3*60*1000+""));
-			DATA_COMPRESSION = Boolean.parseBoolean(
-					prop.getProperty("server.data.compression", "true"));
-			if (prop.containsKey("server.command.path")) {
-				COMMAND_CONFIG_PATH = prop.getProperty("server.command.path");
-			}
-			PRINT_VERBOSE_DATA = Boolean.parseBoolean(
-					prop.getProperty("server.data.print.verbose"));
-			PRINT_SUCCESS_DATA = Boolean.parseBoolean(
-					prop.getProperty("server.data.print.success"));
-			PRINT_FAILURE_DATA = Boolean.parseBoolean(
-					prop.getProperty("server.data.print.failure"));
+			loadConfig1(f);
+			System.out.println("[ServerConfig] server config loaded");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("[ServerConfig]: server config loaded");
+	}
+	
+	/**
+	 * 读取配置文件
+	 * @param f
+	 * @throws IOException
+	 */
+	private static void loadConfig1(File f) throws IOException {
+		modifiedTime.set(f.lastModified());
+		
+		FileInputStream in = new FileInputStream(f);
+		Properties prop = new Properties();
+		prop.load(in);
+		
+		PORT = Integer.parseInt(
+				prop.getProperty("server.port", PORT + ""));
+		CONNECTION_TIMEOUT = Integer.parseInt(
+				prop.getProperty("server.connection.timeout", CONNECTION_TIMEOUT + ""));
+		DATA_COMPRESSION = Boolean.parseBoolean(
+				prop.getProperty("server.data.compression", DATA_COMPRESSION + ""));
+		COMMAND_CONFIG_PATH = prop.getProperty("server.command.path", SERVER_CONFIG_PATH);
+		PRINT_VERBOSE_DATA = Boolean.parseBoolean(
+				prop.getProperty("server.data.print.verbose", PRINT_VERBOSE_DATA + ""));
+		PRINT_SUCCESS_DATA = Boolean.parseBoolean(
+				prop.getProperty("server.data.print.success", PRINT_SUCCESS_DATA + ""));
+		PRINT_FAILURE_DATA = Boolean.parseBoolean(
+				prop.getProperty("server.data.print.failure", PRINT_FAILURE_DATA + ""));
+		
+		printIgnoreMap.clear();
+		String printIgnores = prop.getProperty("server.data.print.ignore", null);
+		if (null != printIgnores && printIgnores.length() > 0) {
+			String[] splits = printIgnores.split(",");
+			for (String printIgnore : splits) {
+				printIgnoreMap.put(printIgnore, printIgnore);
+			}
+		}
 	}
 }

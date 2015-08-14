@@ -29,13 +29,13 @@ public class SimpleServer implements Runnable {
 	@Override
 	public void run() {
 		try {
-			System.out.println("[SimpleServer]: connected");
+			System.out.println("[SimpleServer] connected");
 			lastRequestTime = System.currentTimeMillis();
 			while (true) {
 				// 判断连接是否超时
 				if (System.currentTimeMillis() - lastRequestTime 
 						>= ServerConfig.CONNECTION_TIMEOUT) {
-					System.out.println("[SimpleServer]: connection timeout");
+					System.out.println("[SimpleServer] connection timeout");
 					return;
 				}
 				InputStream in = socket.getInputStream();
@@ -109,7 +109,7 @@ public class SimpleServer implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
-			System.out.println("[SimpleServer]: disconnected");
+			System.out.println("[SimpleServer] disconnected");
 		}
 	}
 
