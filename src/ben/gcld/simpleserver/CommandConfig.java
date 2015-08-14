@@ -163,8 +163,12 @@ public class CommandConfig {
 		int state = 1;
 		// 命令未配置
 		if (data == null) {
-			data = commandError;
-			state = 0;
+			if (!ServerConfig.STANDALONE_MODE) { // 代理模式
+				return null;
+			} else { // 独立运行模式
+				data = commandError;
+				state = 0;
+			}
 		}
 		if (!ServerConfig.printIgnoreMap.containsKey(command)) {
 			// 输出错误数据

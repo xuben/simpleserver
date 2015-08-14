@@ -31,6 +31,12 @@ public class ServerConfig {
 	public static boolean PRINT_FAILURE_DATA = true;
 	/**不打印请求响应数据的命令*/
 	public static ConcurrentHashMap<String, String> printIgnoreMap = new ConcurrentHashMap<String, String>();
+	/**服务器运行模式*/
+	public static boolean STANDALONE_MODE = true;
+	/**proxy模式下目标服务器地址*/
+	public static String PROXY_IP = "10.5.201.45";
+	/**proxy模式下目标服务器端口号*/
+	public static int PROXY_PORT = 8001;
 	
 	/**配置文件路径*/
 	public static String SERVER_CONFIG_PATH = File.separator 
@@ -39,6 +45,8 @@ public class ServerConfig {
 	private static File f;
 	/**配置文件上次修改时间*/
 	private static AtomicLong modifiedTime = new AtomicLong();
+	/**是否初始化过*/
+	private static boolean init;
 	
 	/**
 	 * 读取配置文件
@@ -56,6 +64,7 @@ public class ServerConfig {
 		}
 		try {
 			loadConfig1(f);
+			init = true;
 			System.out.println("[ServerConfig] server config loaded");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -96,5 +105,14 @@ public class ServerConfig {
 				printIgnoreMap.put(printIgnore, printIgnore);
 			}
 		}
+		
+		// 该参数重启生效
+		if (!init) {
+			STANDALONE_MODE = Boolean.parseBoolean(prop.getProperty(
+					"server.mode.standalone", STANDALONE_MODE + ""));
+		}
+		PROXY_IP = prop.getProperty("server.mode.proxy.ip", PROXY_IP);
+		PROXY_PORT = Integer.parseInt(
+				prop.getProperty("server.mode.proxy.port", PROXY_PORT + ""));
 	}
 }
