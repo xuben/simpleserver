@@ -29,6 +29,17 @@ public class IOUtil {
 	public static int readInt(InputStream in) throws IOException {
 		byte[] byteArray = new byte[4];
 		in.read(byteArray);
+		return readInt(byteArray);
+	}
+	
+	/**
+	 * read an integer value from the input stream
+	 * 
+	 * @param byteArray
+	 * @return
+	 * @throws IOException
+	 */
+	public static int readInt(byte[] byteArray) throws IOException {
 		return (byteArray[0]&0xff) << 24 
 				| (byteArray[1]&0xff) << 16 
 				| (byteArray[2]&0xff) << 8 

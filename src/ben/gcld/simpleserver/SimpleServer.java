@@ -28,17 +28,12 @@ public class SimpleServer implements Runnable {
 	private LinkedBlockingQueue<Object> sendQueue;
 	// 从代理服务器接收到的数据包队列
 	private LinkedBlockingQueue<Object> receiveQueue;
+	// flash策略文件处理
+	private FlashPolicyHandler flashPolicyHandler;
 	
 	public SimpleServer(Socket socket) {
 		this.socket = socket;
-		// 代理模式
-		if (!ServerConfig.STANDALONE_MODE) {
-			sendQueue = new LinkedBlockingQueue<Object>();
-			receiveQueue = new LinkedBlockingQueue<Object>();
-			// 启动代理线程
-			proxy = new Thread(new SimpleProxy(sendQueue, receiveQueue));
-			proxy.start();
-		}
+		this.flashPolicyHandler = new FlashPolicyHandler();
 	}
 
 	@Override
@@ -46,6 +41,38 @@ public class SimpleServer implements Runnable {
 		try {
 			System.out.println("[SimpleServer] connected");
 			lastRequestTime = System.currentTimeMillis();
+			// 处理flash策略文件请求
+			int result = 0;
+			while(true) {
+				// 判断连接是否超时
+				if (System.currentTimeMillis() - lastRequestTime 
+						>= ServerConfig.CONNECTION_TIMEOUT) {
+					System.out.println("[SimpleServer] connection timeout");
+					return;
+				}
+				// 处理请求
+				result = flashPolicyHandler.handle(socket);
+				if (result == 0) { // flash策略文件请求
+					System.out.println("[SimpleServer] policy file request");
+					return;
+				} else if (result > 0) { // 不是flash策略文件请求
+					// 代理模式
+					if (!ServerConfig.STANDALONE_MODE) {
+						sendQueue = new LinkedBlockingQueue<Object>();
+						receiveQueue = new LinkedBlockingQueue<Object>();
+						// 启动代理线程
+						proxy = new Thread(new SimpleProxy(sendQueue, receiveQueue));
+						proxy.start();
+					}
+					readLength = result;
+					break;
+				} else {
+					Thread.sleep(100);
+					continue;
+				}
+			}
+			
+			// 处理游戏内请求
 			while (proxy == null || proxy.isAlive()) {
 				// 判断连接是否超时
 				if (System.currentTimeMillis() - lastRequestTime 

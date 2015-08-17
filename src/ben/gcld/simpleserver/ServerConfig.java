@@ -38,6 +38,10 @@ public class ServerConfig {
 	/**proxy模式下目标服务器端口号*/
 	public static int PROXY_PORT = 8001;
 	
+	/**flash策略文件响应*/
+	public static byte[] FLASH_POLICY_RESPONSE = 
+			"<cross-domain-policy><allow-access-from domain=\"*\" to-ports=\"*\" /></cross-domain-policy>\0".getBytes();
+	
 	/**配置文件路径*/
 	public static String SERVER_CONFIG_PATH = File.separator 
 			+ "conf" + File.separator + "server.properties";
