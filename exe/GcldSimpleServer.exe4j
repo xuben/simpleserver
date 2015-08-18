@@ -6,9 +6,9 @@
       <principalLanguage id="en" customLocalizationFile="" />
     </languages>
   </application>
-  <executable name="GcldSimpleServer" type="2" iconSet="true" iconFile="E:/myworkspace/GcldSimpleServer/exe/men_hoodie_128px_1190134_easyicon.net.ico" executableDir="" redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" amd64="false">
+  <executable name="GcldSimpleServer" type="2" iconSet="true" iconFile="E:/myworkspace/GcldSimpleServer/exe/men_hoodie_128px_1190134_easyicon.net.ico" executableDir="." redirectStderr="false" stderrFile="error.log" redirectStdout="false" stdoutFile="output.log" failOnStderrOutput="true" executableMode="2" changeWorkingDirectory="true" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="false" amd64="false">
     <messageSet />
-    <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" companyName="" productVersion="" />
+    <versionInfo include="true" fileVersion="" fileDescription="" legalCopyright="Xuben" internalName="" companyName="XuBen" productVersion="1.0.0.0" />
   </executable>
   <splashScreen show="false" autoOff="true" alwaysOnTop="true" width="0" height="0" bitmapFile="E:/download/men_hoodie_120.07504690432px_1190134_easyicon.net.png" java6SplashScreen="false">
     <text>
