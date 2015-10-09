@@ -144,7 +144,7 @@ public class SimpleServer implements Runnable {
 						out.write(requestIdBytes);
 						out.write(dataBytes);
 						out.flush();
-					} else if (null != sendQueue) { // 代理模式
+					} else if (null != sendQueue || command.equals(ServerConfig.COMMAND_ROLE_INFO)) { // 代理模式
 						// 发送给目标服务器
 						byte[] sendBytes = new byte[4+readLength];
 						IOUtil.writeInt(readLength, sendBytes, 0);
